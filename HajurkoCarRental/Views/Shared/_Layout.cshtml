@@ -1,0 +1,129 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using HajurkoCarRental.Areas.Identity.Data;
+@inject SignInManager<HajurkoCarRentalUser> SignInManager;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HajurkoCarRental</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HajurkoCarRental.styles.css" asp-append-version="true" />
+    <link href="~/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <a href="~/assets/bootstrap/css/bootstrap.min.css.map"></a>
+    <link href="~/assets/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/assets/css/main.css" rel="stylesheet" />
+    <link href="~/assets/css/noscript.css" rel="stylesheet" /><a href="~/assets/fonts/fontawesome-webfont.ttf"></a>
+<a href="~/assets/fonts/fontawesome.otf"></a>
+</head>
+<body class="is-preload">
+    @*<header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HajurkoCarRental</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                    </ul>
+                        <partial name="_loginpartial" />
+                </div>
+            </div>
+        </nav>
+    </header>*@
+    <div class="wrapper">
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo" style="padding-left:50px">
+                    <span class="fa fa-car"></span>
+                    <span class="title" >HAJURKO CAR RENTAL</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li>
+                    <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+
+                <li>
+                    <a  asp-area="" asp-controller="Cars" asp-action="RentalCars">Rental Cars</a>
+                </li>
+
+                @if(SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                {
+                    
+                <li>
+                    <a asp-area="" asp-controller="Cars" asp-action="Index">Manage Cars</a>
+                </li>
+                }
+           
+               
+
+                
+
+                @*<li>
+                    <a href="#" class="dropdown-toggle">About</a>
+
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="team.html">Team</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="testimonials.html">Testimonials</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms.html">Terms</a></li>
+                    </ul>
+                </li>
+                <li><a href="contact.html">Contact Us</a></li>*@
+            </ul>
+            <partial name="_loginpartial" />
+
+        </nav>
+        
+
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+             &copy; 2023 - HajurkoCarRental - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+    
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/jquery.scrollex.min.js"></script>
+    <script src="~/assets/js/jquery.scrolly.min.js"></script>
+    <script src="~/assets/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
