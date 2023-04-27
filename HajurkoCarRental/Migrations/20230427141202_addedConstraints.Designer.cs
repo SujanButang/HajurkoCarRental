@@ -4,6 +4,7 @@ using HajurkoCarRental.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HajurkoCarRental.Migrations
 {
     [DbContext(typeof(HajurkoCarRentalContext))]
-    partial class HajurkoCarRentalContextModelSnapshot : ModelSnapshot
+    [Migration("20230427141202_addedConstraints")]
+    partial class addedConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,7 +139,7 @@ namespace HajurkoCarRental.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Car", (string)null);
+                    b.ToTable("Car");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Order", b =>
@@ -169,7 +171,7 @@ namespace HajurkoCarRental.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Sales", b =>
@@ -191,8 +193,9 @@ namespace HajurkoCarRental.Migrations
                     b.Property<int>("RentalCharges")
                         .HasColumnType("int");
 
-                    b.Property<int>("RentalDuration")
-                        .HasColumnType("int");
+                    b.Property<string>("RentalDuration")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -202,7 +205,7 @@ namespace HajurkoCarRental.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Sales", (string)null);
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

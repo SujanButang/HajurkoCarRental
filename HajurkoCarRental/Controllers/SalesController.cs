@@ -7,121 +7,95 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HajurkoCarRental.Data;
 using HajurkoCarRental.Models;
-using HajurkoCarRental.Areas.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 
 namespace HajurkoCarRental.Controllers
 {
-    public class OrdersController : Controller
+    public class SalesController : Controller
     {
         private readonly HajurkoCarRentalContext _context;
 
-
-        public OrdersController(HajurkoCarRentalContext context)
+        public SalesController(HajurkoCarRentalContext context)
         {
             _context = context;
         }
 
-
-        [Authorize]
-        // GET: Orders
+        // GET: Sales
         public async Task<IActionResult> Index()
         {
-            
-
-
-            var hajurkoCarRentalContext = _context.Order.Include(o => o.Car).Include(o=>o.Users);
+            var hajurkoCarRentalContext = _context.Sales.Include(s => s.Car).Include(s => s.Order).Include(s=>s.HajurkoCarRentalUser);
             return View(await hajurkoCarRentalContext.ToListAsync());
-            }
-        
-
-        // GET: Orders/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null || _context.Order == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Order
-                .Include(o => o.Car)
-                .Include(o=>o.Users)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);
         }
 
-
-        [Authorize]
-        // GET: Orders/Create
-        public IActionResult Create(string carId)
+        // GET: Sales/Details/5
+        public async Task<IActionResult> Details(Guid? id)
         {
-            ViewBag.CarId = carId;
-            // rest of the code
+            if (id == null || _context.Sales == null)
+            {
+                return NotFound();
+            }
+
+            var sales = await _context.Sales
+                .Include(s => s.Car)
+                .Include(s => s.Order)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (sales == null)
+            {
+                return NotFound();
+            }
+
+            return View(sales);
+        }
+
+        // GET: Sales/Create
+        public IActionResult Create()
+        {
+            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id");
+            ViewData["OrderId"] = new SelectList(_context.Order, "Id", "Id");
             return View();
         }
 
-        // POST: Orders/Create
+        // POST: Sales/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Order order)
+        public async Task<IActionResult> Create([Bind("Id,CarId,OrderId,RentalDuration,RentalCharges,ApprovedBy")] Sales sales)
         {
             
-                order.Id = Guid.NewGuid();
-                _context.Add(order);
+                sales.Id = Guid.NewGuid();
+                _context.Add(sales);
                 await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Order added successfully!";
-            return RedirectToAction("Index","Home");           
-  
+             return RedirectToAction("Approve", "Orders", new { id = sales.OrderId });
+            
         }
 
-        // GET: Orders/Edit/5
+
+        // GET: Sales/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.Order == null)
+            if (id == null || _context.Sales == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Order.FindAsync(id);
-            if (order == null)
+            var sales = await _context.Sales.FindAsync(id);
+            if (sales == null)
             {
                 return NotFound();
             }
-            return View(order);
+            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", sales.CarId);
+            ViewData["OrderId"] = new SelectList(_context.Order, "Id", "Id", sales.OrderId);
+            return View(sales);
         }
 
-        
-        public async Task<IActionResult> Approve(Guid id)
-        {
-            
-            var order = await _context.Order.FindAsync(id);
-            if (order==null)
-            {
-                return NotFound();
-            }
-            order.Status = "Approved";
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index","Orders");
-
-        }
-
-        // POST: Orders/Edit/5
+        // POST: Sales/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CarId,CustomerId,OrderDate,ReturnDate,Status")] Order order)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,CarId,OrderId,RentalDuration,RentalCharges,ApprovedBy")] Sales sales)
         {
-            if (id != order.Id)
+            if (id != sales.Id)
             {
                 return NotFound();
             }
@@ -130,12 +104,12 @@ namespace HajurkoCarRental.Controllers
             {
                 try
                 {
-                    _context.Update(order);
+                    _context.Update(sales);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderExists(order.Id))
+                    if (!SalesExists(sales.Id))
                     {
                         return NotFound();
                     }
@@ -146,51 +120,53 @@ namespace HajurkoCarRental.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", order.CarId);
-            return View(order);
+            ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", sales.CarId);
+            ViewData["OrderId"] = new SelectList(_context.Order, "Id", "Id", sales.OrderId);
+            return View(sales);
         }
 
-        // GET: Orders/Delete/5
+        // GET: Sales/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.Order == null)
+            if (id == null || _context.Sales == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.Car)
+            var sales = await _context.Sales
+                .Include(s => s.Car)
+                .Include(s => s.Order)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
+            if (sales == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(sales);
         }
 
-        // POST: Orders/Delete/5
+        // POST: Sales/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Order == null)
+            if (_context.Sales == null)
             {
-                return Problem("Entity set 'HajurkoCarRentalContext.Order'  is null.");
+                return Problem("Entity set 'HajurkoCarRentalContext.Sales'  is null.");
             }
-            var order = await _context.Order.FindAsync(id);
-            if (order != null)
+            var sales = await _context.Sales.FindAsync(id);
+            if (sales != null)
             {
-                _context.Order.Remove(order);
+                _context.Sales.Remove(sales);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OrderExists(Guid id)
+        private bool SalesExists(Guid id)
         {
-          return (_context.Order?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Sales?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

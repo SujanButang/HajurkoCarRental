@@ -1,45 +1,116 @@
-﻿@model HajurkoCarRental.Models.Order
+﻿@using HajurkoCarRental.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model HajurkoCarRental.Models.Order
+@inject UserManager<HajurkoCarRentalUser> UserManager
+
 
 @{
     ViewData["Title"] = "Details";
+    TimeSpan rentalDuration = Model.ReturnDate - Model.OrderDate;
+    int rentalDays = (int)rentalDuration.TotalDays;
+    int rentalCharges = rentalDays * Model.Car.DailyRent;
 }
+<style>
+    .detail{
+        display:flex;
+        gap:0px;
+    }
+    .detail-last{
+        display:flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 30px;
+        margin-top: 30px;
+    }
 
-<h1>Details</h1>
+</style>
+
+<h3> Order Details</h3>
 
 <div>
-    <h4>Order</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <div class="col-sm-6">
+        <div class="detail">
+
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.Car)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Car.Id)
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Car.Name) @Html.DisplayFor(model=>model.Car.Model)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerId)
+        </div>
+        <div class="detail">
+
+
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.Users.Name)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerId)
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Users.Name)
         </dd>
-        <dt class = "col-sm-2">
+        </div>
+        <div class="detail">
+
+
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.OrderDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.OrderDate)
         </dd>
-        <dt class = "col-sm-2">
+        </div>
+        <div class="detail">
+
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.ReturnDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.ReturnDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
+            </div>
+        <div class="detail">
+
+
+            <dt class = "col-sm-3">
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+            <dd class = "col-sm-9">
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+        </div>
+
+        <div class="detail">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model=>model.Users.Phone)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Users.Phone)
+            </dd>
+        </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <img src="~/images/@Model.Car.PhotoUrl" style="height:200px; width:400px; object-fit:cover" alt="...">
+
+            </div>
+            <br/>
+            <div class="row">
+                <img src="~/images/@Model.Car.PhotoUrl" style="height:200px; width:400px; object-fit:cover" alt="...">
+
+            </div>
+        </div>
+        <div class="detail-last">
+            <form  asp-controller="Sales" asp-action="Create" >
+                <input type="hidden"  name="orderId" value="@Model.Id" />
+                <input type="hidden"  name="CarId" value="@Model.Car.Id"/>
+                <input type="hidden"  name="RentalDuration" value="@rentalDays" />
+                <input type="hidden"  name="RentalCharges" value="@rentalCharges" />
+                <input type="hidden"  name="ApprovedBy" value="@UserManager.GetUserId(User)"/>
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+            </form>
+           
+        </div>
     </dl>
 </div>
 <div>

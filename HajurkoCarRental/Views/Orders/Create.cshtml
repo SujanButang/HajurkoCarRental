@@ -56,6 +56,40 @@
 }
 
 
-@*@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}*@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Get the order date and return date fields
+            var orderDate = $('#OrderDate');
+            var returnDate = $('#ReturnDate');
+
+            // Set the minimum order date to today
+            orderDate.attr('min', new Date().toISOString().slice(0, 10));
+
+            // Validate the form when the submit button is clicked
+            $('form').submit(function () {
+                // Parse the order and return dates as Date objects
+                var orderDateValue = new Date(orderDate.val());
+                var returnDateValue = new Date(returnDate.val());
+
+                // Check if the order date is before today
+                if (orderDateValue < new Date()) {
+                    alert('Order date cannot be before today');
+                    return false;
+                }
+
+                // Check if the return date is before the order date
+                if (returnDateValue <= orderDateValue) {
+                    alert('Return date must be after order date');
+                    return false;
+                }
+
+                return true;
+            });
+        });
+    </script>
+}
+

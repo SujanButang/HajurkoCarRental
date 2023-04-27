@@ -27,6 +27,7 @@ namespace HajurkoCarRental.Models
 
         public string Status { get; set; }
 
+
         public Order()
         {
             Status = "Available";
