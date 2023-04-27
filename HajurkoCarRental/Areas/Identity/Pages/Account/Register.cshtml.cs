@@ -19,11 +19,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using HajurkoCarRental.Data;
 
 namespace HajurkoCarRental.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
+        private readonly HajurkoCarRentalContext _context;
         private readonly SignInManager<HajurkoCarRentalUser> _signInManager;
         private readonly UserManager<HajurkoCarRentalUser> _userManager;
         private readonly IUserStore<HajurkoCarRentalUser> _userStore;
@@ -36,7 +39,8 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             IUserStore<HajurkoCarRentalUser> userStore,
             SignInManager<HajurkoCarRentalUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            HajurkoCarRentalContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,7 +48,10 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
+
+        
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -137,6 +144,7 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
                 user.Name = Input.Name;
                 user.Address = Input.Address;
                 user.Phone = Input.Phone;
+                
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -160,12 +168,26 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
+                        
+
+                        // Add the user role to the UserRoles table
+                        var userRole = new IdentityUserRole<string>
+                        {
+                            RoleId = _context.Roles.FirstOrDefault(r => r.Name == "User").Id,
+                            UserId = user.Id
+                        };
+
+                        await _context.UserRoles.AddAsync(userRole);
+                        await _context.SaveChangesAsync();
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
                     else
                     {
+                       
+
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
+                       
                     }
                 }
                 foreach (var error in result.Errors)

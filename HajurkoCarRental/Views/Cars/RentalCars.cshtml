@@ -18,12 +18,12 @@
 		<section class="tiles">
 			@foreach (var item in Model)
 			{
-				
+
 			<article class="style1">
 				<span class="image">
 						<img src="@Url.Content("~/images/" + item.PhotoUrl)" alt="Image" height="200" width="400" style="object-fit:cover"/>
 				</span>
-				<a href="#footer" class="scrolly">
+					<a  class="scrolly" asp-route-id="@item.Id" asp-controller="Cars" asp-action="CarDetails">
 						<h2>@Html.DisplayFor(modelItem => item.Name)</h2>
 						<h3>@Html.DisplayFor(modelItem => item.Model)</h3>
 

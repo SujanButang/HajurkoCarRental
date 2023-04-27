@@ -58,6 +58,23 @@ namespace HajurkoCarRental.Controllers
             return View(car);
         }
 
+        public async Task<IActionResult> CarDetails(Guid? id)
+        {
+            if (id == null || _context.Car == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Car
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            return View(car);
+        }
+
         // GET: Cars/Create
         public IActionResult Create()
         {

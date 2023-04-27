@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using HajurkoCarRental.Data;
 using HajurkoCarRental.Areas.Identity.Data;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("HajurkoCarRentalContextConnection") ?? throw new InvalidOperationException("Connection string 'HajurkoCarRentalContextConnection' not found.");
@@ -22,6 +23,10 @@ builder.Services.AddAuthorization(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,6 +44,8 @@ app.UseRouting();
 app.UseAuthentication();;
 
 app.UseAuthorization();
+
+
 
 app.MapControllerRoute(
     name: "default",

@@ -20,6 +20,7 @@ namespace HajurkoCarRental.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ViewBag.Message = TempData["Message"] as string;
             return _context.Car != null ?
                           View(await _context.Car.ToListAsync()) :
                           Problem("Entity set 'HajurkoCarRentalContext.Car'  is null.");
