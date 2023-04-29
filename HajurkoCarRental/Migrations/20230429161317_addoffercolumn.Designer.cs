@@ -4,6 +4,7 @@ using HajurkoCarRental.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HajurkoCarRental.Migrations
 {
     [DbContext(typeof(HajurkoCarRentalContext))]
-    partial class HajurkoCarRentalContextModelSnapshot : ModelSnapshot
+    [Migration("20230429161317_addoffercolumn")]
+    partial class addoffercolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,6 +126,9 @@ namespace HajurkoCarRental.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -140,6 +145,8 @@ namespace HajurkoCarRental.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
 
                     b.ToTable("Car");
                 });
@@ -421,6 +428,17 @@ namespace HajurkoCarRental.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("HajurkoCarRental.Models.Car", b =>
+                {
+                    b.HasOne("HajurkoCarRental.Models.Offers", "Offers")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Offers");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Damages", b =>

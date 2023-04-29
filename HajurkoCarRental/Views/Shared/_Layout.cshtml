@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using HajurkoCarRental.Areas.Identity.Data;
 @inject SignInManager<HajurkoCarRentalUser> SignInManager;
+@inject UserManager<HajurkoCarRentalUser> UserManager;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +47,7 @@
         <header id="header">
             <div class="inner">
                 <!-- Logo -->
-                <a href="index.html" class="logo" style="padding-left:50px">
+                <a asp-controller="Home" asp-action="Index" class="logo" style="padding-left:50px">
                     <span class="fa fa-car"></span>
                     <span class="title" >HAJURKO CAR RENTAL</span>
                 </a>
@@ -72,20 +73,32 @@
                     <a  asp-area="" asp-controller="Cars" asp-action="RentalCars">Rental Cars</a>
                 </li>
 
-                @if(SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
-                {
-                    
                 <li>
-                    <a asp-area="" asp-controller="Cars" asp-action="Index">Manage Cars</a>
+                    <a asp-area="" asp-controller="Notifications" asp-action="Index">Notifications</a>
+
+                </li>
+                <li>
+                    <a asp-area="" asp-controller="Sales" asp-action="RentalHistory" asp-route-userId="@UserManager.GetUserId(User)">Rental History</a>
+                </li>
+                @if(SignInManager.IsSignedIn(User) && (User.IsInRole("Admin")||User.IsInRole("Staff"))  )
+                {
+                                    <li>
+                    <a asp-area="" asp-controller="Cars" asp-action="Index"> Cars</a>
                 </li>
                     <li>
-                        <a asp-area="" asp-controller="User" asp-action="Users">Manage Users</a>
+                        <a asp-area="" asp-controller="User" asp-action="Users"> Users</a>
                     </li>
                     <li>
-                        <a asp-area="" asp-controller="Orders" asp-action="Index">Manage Orders</a>
+                        <a asp-area="" asp-controller="Orders" asp-action="Index"> Orders</a>
                     </li>
                     <li>
-                        <a asp-area="" asp-controller="Sales" asp-action="Index">Manage Sales</a>
+                        <a asp-area="" asp-controller="Sales" asp-action="Index"> Sales</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Damages" asp-action="Index"> Damage Reports</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Offers" asp-action="Index"> Manage Offers</a>
                     </li>
                 }
            

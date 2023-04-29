@@ -3,12 +3,32 @@
 @{
     ViewData["Title"] = "Register";
 }
+<style>
+
+    .custom-file-button input[type=file] {
+        margin-left: -2px !important;
+    }
+
+        .custom-file-button input[type=file]::-webkit-file-upload-button {
+            display: none;
+        }
+
+        .custom-file-button input[type=file]::file-selector-button {
+            display: none;
+        }
+
+    .custom-file-button:hover label {
+        background-color: #dde0e3;
+        cursor: pointer;
+    }
+
+</style>
 
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
             <h2>Create a new account.</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -42,43 +62,43 @@
                 <label asp-for="Input.Phone"></label>
                 <span asp-validation-for="Input.Phone" class="text-danger"></span>
             </div>
+            <div class="col-md-12 btn-group pb-2">
+                <div class="form-group col-4 p-0">
+                    <label asp-for="Input.Document" class="control-label"></label>
+                    <img id="PreviewPhoto" src="~/images/noimage.png" alt="Logo Image"
+                                      width="125" height="125" />
+                    <span asp-validation-for="Input.Document" class="text-danger"></span>
+                </div>
+                <div class="col-1 p-0">
+                </div>
+                <div class="form-group col-7 p-0">
+                    <div class="input-group custom-file-button mt-5 pt-5">
+                        <input asp-for="Input.Document" class="form-control custom-file-input" id="customFile">
+                        <label class="input-group-text" for="customFile">Browse</label>
+                    </div>
+                </div>
+            </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+            <div class="form-group pt-0 mt-0">
+                <div ID="HiddenDiv" >
+                    <input asp-for="Input.DocumentUrl" id="PhotoUrl" value="" />
+                </div>
+            </div>
         </form>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
-                                article
-                                about setting up this ASP.NET application to support logging in via external services
-                            </a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
+    
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+        <script type="text/javascript">
+            $(".custom-file-input").on("change", function () {
+
+                var fileName = $(this).val().split("\\").pop();
+
+                document.getElementById('PreviewPhoto').src = window.URL.createObjectURL(this.files[0]);
+
+                document.getElementById('PhotoUrl').value = fileName;
+
+            });</script>
 }

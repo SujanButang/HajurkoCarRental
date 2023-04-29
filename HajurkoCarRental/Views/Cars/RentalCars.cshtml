@@ -8,7 +8,8 @@
 
 <div id="main">
 	<div class="inner">
-		<h1>Fleet</h1>
+		<h1>Rental Cars</h1>
+		<input type="text" id="search-input" placeholder="Search by Brand"/>
 
 		<div class="image main">
 			<img src="~/images/banner-image-7-1920x500.jpg" class="img-fluid" alt="" />
@@ -27,8 +28,19 @@
 						<h2>@Html.DisplayFor(modelItem => item.Name)</h2>
 						<h3>@Html.DisplayFor(modelItem => item.Model)</h3>
 
-						<p>Rent: <strong> Rs  @Html.DisplayFor(modelItem => item.DailyRent)</strong> per day</p>
+						@if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+						{
 
+							<p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.2 * item.DailyRent)) </strong> per day</p>
+						}
+						else if(User.IsInRole("RegularCustomer")){
+							<p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.1 * item.DailyRent)) </strong> per day</p>
+						}
+						else
+						{
+							<p>Rent: <strong> Rs  @(item.DailyRent) </strong> per day</p>
+
+						}
 					
 				</a>
 			</article>
@@ -37,3 +49,27 @@
 		</section>
 	</div>
 </div>
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script type='text/javascript'>
+		const searchInput = document.getElementById('search-input');
+		const carItems = document.querySelectorAll('.style1');
+
+		function filterCars() {
+			const searchTerm = searchInput.value.toLowerCase();
+			carItems.forEach(item => {
+				const name = item.querySelector('h2').textContent.toLowerCase();
+				if (name.includes(searchTerm)) {
+					item.style.display = 'block'
+				}
+				else {
+					item.style.display = 'none'
+				}
+			});
+		}
+			searchInput.addEventListener('input', filterCars)
+	</script>
+}
+

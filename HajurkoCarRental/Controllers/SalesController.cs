@@ -22,7 +22,7 @@ namespace HajurkoCarRental.Controllers
         // GET: Sales
         public async Task<IActionResult> Index()
         {
-            var hajurkoCarRentalContext = _context.Sales.Include(s => s.Car).Include(s => s.Order).Include(s=>s.HajurkoCarRentalUser);
+            var hajurkoCarRentalContext = _context.Sales.Include(s => s.Car).Include(s => s.Order).ThenInclude(o => o.Users).Include(s => s.HajurkoCarRentalUser);
             return View(await hajurkoCarRentalContext.ToListAsync());
         }
 
@@ -67,6 +67,19 @@ namespace HajurkoCarRental.Controllers
                 await _context.SaveChangesAsync();
              return RedirectToAction("Approve", "Orders", new { id = sales.OrderId });
             
+        }
+
+      
+
+        public async Task<IActionResult> RentalHistory(string userId)
+        {
+            var sales = await _context.Sales
+        .Include(s => s.Car)
+        .Include(s => s.Order)
+        .Where(s => s.Order.Users.Id == userId)
+        .ToListAsync();
+
+            return View(sales);
         }
 
 

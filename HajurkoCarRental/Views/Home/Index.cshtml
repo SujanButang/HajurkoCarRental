@@ -1,4 +1,7 @@
-﻿@model IEnumerable<HajurkoCarRental.Models.Car>
+﻿@using HajurkoCarRental.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<HajurkoCarRental.Models.Car>
+@inject SignInManager<HajurkoCarRentalUser> SignInManager;
 
 @{
     ViewData["Title"] = "Home Page";
@@ -9,6 +12,7 @@
         @ViewBag.Message
     </div>
 }
+
 
 
 
@@ -69,10 +73,7 @@
     <header id="inner">
         <h1>Rent a car at low prices</h1>
         <p>
-            Etiam quis viverra lorem, in semper lorem. Sed nisl arcu euismod
-            sit amet nisi euismod sed cursus arcu elementum ipsum arcu vivamus
-            quis venenatis orci lorem ipsum et magna feugiat veroeros aliquam.
-            Lorem ipsum dolor sit amet nullam dolore.
+                Rent a car hassle-free with our comprehensive car rental website services. Browse through a wide range of cars and select the perfect one for your needs. Enjoy easy booking, competitive pricing, and exceptional customer service.
         </p>
     </header>
 
@@ -90,11 +91,24 @@
 				<span class="image">
 						<img src="@Url.Content("~/images/" + item.PhotoUrl)" alt="Image" height="200" width="400" style="object-fit:cover"/>
 				</span>
-				<a href="#footer" class="scrolly">
-						<h2>@Html.DisplayFor(modelItem => item.Name)</h2>
+                    <a class="scrolly" asp-route-id="@item.Id" asp-controller="Cars" asp-action="CarDetails">
+                        <h2>@Html.DisplayFor(modelItem => item.Name)</h2>
 						<h3>@Html.DisplayFor(modelItem => item.Model)</h3>
+                        @if(User.IsInRole("Admin") || User.IsInRole("Staff"))
+                        {
+ 
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.2 * item.DailyRent)) </strong> per day</p>
+                        }
+                        else if (User.IsInRole("RegularCustomer"))
+                        {
+                    <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.1 * item.DailyRent)) </strong> per day</p>
 
-						<p>Rent: <strong> Rs  @Html.DisplayFor(modelItem => item.DailyRent)</strong> per day</p>
+                        }
+                        else
+                        {
+                                                    <p>Rent: <strong> Rs  @(item.DailyRent) </strong> per day</p>
+
+                        }
 
 					
 				</a>

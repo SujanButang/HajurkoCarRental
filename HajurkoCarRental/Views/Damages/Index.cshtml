@@ -1,0 +1,66 @@
+﻿@model IEnumerable<HajurkoCarRental.Models.Damages>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Damage Reports</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                 @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                Car @Html.DisplayNameFor(model => model.Car.Name)
+            </th>
+            <th>
+               Car @Html.DisplayNameFor(model => model.Car.Model)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DamageDesc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RepairCost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.Status)
+            </th>
+            <th></th>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Car.Name)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Car.Model)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DamageDesc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RepairCost)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            <td>
+                    @if (item.Status == "Pending")
+                    {
+                        
+                <a asp-action="Edit" asp-route-id="@item.Id">Charge Amount</a> 
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

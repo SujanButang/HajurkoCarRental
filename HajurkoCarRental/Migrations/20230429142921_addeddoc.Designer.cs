@@ -4,6 +4,7 @@ using HajurkoCarRental.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HajurkoCarRental.Migrations
 {
     [DbContext(typeof(HajurkoCarRentalContext))]
-    partial class HajurkoCarRentalContextModelSnapshot : ModelSnapshot
+    [Migration("20230429142921_addeddoc")]
+    partial class addeddoc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,31 +196,6 @@ namespace HajurkoCarRental.Migrations
                     b.HasIndex("To");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("HajurkoCarRental.Models.Offers", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DiscountPercentage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Validity")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Order", b =>

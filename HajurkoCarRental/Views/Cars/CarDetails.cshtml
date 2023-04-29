@@ -45,10 +45,25 @@
     <div class="detail">
 
     <dt class="col-sm-1">@Html.DisplayNameFor(model=>model.DailyRent)</dt>
-    <dd class="col-sm-11"> Rs
-        @Html.DisplayFor(model=>model.DailyRent)
-    </dd>
+    <dd class="col-sm-11">
+            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+            {
+
+                <p>  Rs <strong><s style="font-weight:500">@Model.DailyRent</s> @(Model.DailyRent - (0.2 * Model.DailyRent)) </strong> per day</p>
+            }
+            else if (User.IsInRole("RegularCustomer"))
+            {
+                                <p>  Rs <strong><s style="font-weight:500">@Model.DailyRent</s> @(Model.DailyRent - (0.1 * Model.DailyRent)) </strong> per day</p>
+
+            }
+            else
+            {
+                <p>Rs  <strong>  @(Model.DailyRent) </strong> per day</p>
+
+            }
+        </dd>
     </div>
     
 </dl>
+
 <a class="btn btn-primary" asp-controller="Orders" asp-action="Create" asp-route-carId = "@Model.Id">Book Now</a>

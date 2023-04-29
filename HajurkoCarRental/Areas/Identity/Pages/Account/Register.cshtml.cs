@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using HajurkoCarRental.Data;
+using HajurkoCarRental.Models;
 
 namespace HajurkoCarRental.Areas.Identity.Pages.Account
 {
@@ -33,6 +34,8 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<HajurkoCarRentalUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHost;
+
 
         public RegisterModel(
             UserManager<HajurkoCarRentalUser> userManager,
@@ -40,7 +43,8 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             SignInManager<HajurkoCarRentalUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            HajurkoCarRentalContext context)
+            HajurkoCarRentalContext context,
+            IWebHostEnvironment webHost)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -49,9 +53,10 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _webHost = webHost;
         }
 
-        
+
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -107,6 +112,14 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Required]
+            [Display(Name = "Document")]
+            [DataType(DataType.Text)]
+            public string DocumentUrl { get; set; }
+
+            [Required(ErrorMessage = "Please upload a document.")]
+            public IFormFile Document { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -125,6 +138,8 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+           
         }
 
 
@@ -138,9 +153,11 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
-            {
+            
                 var user = CreateUser();
+            IFormFile doc = Input.Document;
+            string uniqueFileName = GetProfilePhotoFileName(doc);
+            user.DocumentUrl = uniqueFileName;
                 user.Name = Input.Name;
                 user.Address = Input.Address;
                 user.Phone = Input.Phone;
@@ -194,7 +211,7 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-            }
+            
 
             // If we got this far, something failed, redisplay form
             return Page();
@@ -222,5 +239,23 @@ namespace HajurkoCarRental.Areas.Identity.Pages.Account
             }
             return (IUserEmailStore<HajurkoCarRentalUser>)_userStore;
         }
+        private string GetProfilePhotoFileName(IFormFile Input)
+        {
+            string uniqueFileName = null;
+
+            if (Input != null)
+            {
+                string uploadsFolder = Path.Combine(_webHost.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Input.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    Input.CopyTo(fileStream);
+                }
+            }
+
+            return uniqueFileName;
+        }
+
     }
 }

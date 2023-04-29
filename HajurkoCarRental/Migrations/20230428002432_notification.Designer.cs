@@ -4,6 +4,7 @@ using HajurkoCarRental.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HajurkoCarRental.Migrations
 {
     [DbContext(typeof(HajurkoCarRentalContext))]
-    partial class HajurkoCarRentalContextModelSnapshot : ModelSnapshot
+    [Migration("20230428002432_notification")]
+    partial class notification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,10 +38,6 @@ namespace HajurkoCarRental.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DocumentUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -144,37 +142,6 @@ namespace HajurkoCarRental.Migrations
                     b.ToTable("Car");
                 });
 
-            modelBuilder.Entity("HajurkoCarRental.Models.Damages", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CarId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DamageDesc")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RepairCost")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarId");
-
-                    b.ToTable("Damages");
-                });
-
             modelBuilder.Entity("HajurkoCarRental.Models.Notifications", b =>
                 {
                     b.Property<Guid>("Id")
@@ -185,40 +152,14 @@ namespace HajurkoCarRental.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("To")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("To")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("To");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("HajurkoCarRental.Models.Offers", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DiscountPercentage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Validity")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Order", b =>
@@ -423,26 +364,15 @@ namespace HajurkoCarRental.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HajurkoCarRental.Models.Damages", b =>
-                {
-                    b.HasOne("HajurkoCarRental.Models.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Car");
-                });
-
             modelBuilder.Entity("HajurkoCarRental.Models.Notifications", b =>
                 {
-                    b.HasOne("HajurkoCarRental.Areas.Identity.Data.HajurkoCarRentalUser", "Users")
+                    b.HasOne("HajurkoCarRental.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("To")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("HajurkoCarRental.Models.Order", b =>

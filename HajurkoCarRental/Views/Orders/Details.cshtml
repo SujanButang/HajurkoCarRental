@@ -8,7 +8,19 @@
     ViewData["Title"] = "Details";
     TimeSpan rentalDuration = Model.ReturnDate - Model.OrderDate;
     int rentalDays = (int)rentalDuration.TotalDays;
-    int rentalCharges = rentalDays * Model.Car.DailyRent;
+    int rentalCharges;
+    if (User.IsInRole("staff") || User.IsInRole("admin"))
+    {
+        rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * 0.2)));
+    }
+    else if (User.IsInRole("RegularCustomer"))
+    {
+        rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * 0.1)));
+    }
+    else
+    {
+         rentalCharges = rentalDays * Model.Car.DailyRent;
+    }
 }
 <style>
     .detail{
@@ -96,7 +108,7 @@
             </div>
             <br/>
             <div class="row">
-                <img src="~/images/@Model.Car.PhotoUrl" style="height:200px; width:400px; object-fit:cover" alt="...">
+                <img src="~/images/@Model.Users.DocumentUrl" style="height:200px; width:400px; object-fit:cover" alt="...">
 
             </div>
         </div>
@@ -105,7 +117,10 @@
                 <input type="hidden"  name="orderId" value="@Model.Id" />
                 <input type="hidden"  name="CarId" value="@Model.Car.Id"/>
                 <input type="hidden"  name="RentalDuration" value="@rentalDays" />
+                
+                    
                 <input type="hidden"  name="RentalCharges" value="@rentalCharges" />
+                
                 <input type="hidden"  name="ApprovedBy" value="@UserManager.GetUserId(User)"/>
                 <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
             </form>

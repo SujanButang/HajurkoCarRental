@@ -110,9 +110,23 @@ namespace HajurkoCarRental.Controllers
             }
             order.Status = "Approved";
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index","Orders");
 
+             var notification = new Notifications
+    {
+        Id = Guid.NewGuid(),
+        To = order.CustomerId,
+        NotificationType = "Your Rental Request for "+ order.Car.Name + order.Car.Model +"has been approved by the system."
+    };
+
+    // Add the notification to the context and save changes
+    _context.Add(notification);
+    await _context.SaveChangesAsync();
+
+    // Redirect to the Index action of the Orders controller
+    return RedirectToAction("Index", "Orders");
         }
+
+        
 
         // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
