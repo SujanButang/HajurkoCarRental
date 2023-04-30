@@ -30,5 +30,7 @@ public class HajurkoCarRentalContext : IdentityDbContext<HajurkoCarRentalUser>
 
     public DbSet<HajurkoCarRental.Models.Damages>? Damages { get; set; }
     public DbSet<HajurkoCarRental.Models.Offers>? Offers { get; set; }
+    public DbSet<HajurkoCarRental.Models.CarOffer>? CarOffer { get; set; }
+
 
 }

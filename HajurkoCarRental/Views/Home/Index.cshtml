@@ -1,11 +1,13 @@
 ﻿@using HajurkoCarRental.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
-@model IEnumerable<HajurkoCarRental.Models.Car>
+@model IEnumerable<HajurkoCarRental.Controllers.CarViewModel>
 @inject SignInManager<HajurkoCarRentalUser> SignInManager;
+@inject IHtmlHelper HtmlHelper;
 
 @{
     ViewData["Title"] = "Home Page";
 }
+
 @if (ViewBag.Message != null)
 {
     <div class="alert alert-success">
@@ -84,7 +86,7 @@
     <h2 class="h2">Rental Cars</h2>
     <!-- Fleet -->
     <section class="tiles">
-            @foreach(var item in Model)
+            @foreach (var item in Model.SelectMany(x => x.CarsInOffers))
             {
                 
             <article class="style1">
@@ -116,8 +118,43 @@
             }   
         
     </section>
+        <h2 class="h2">Offers</h2>
+        <!-- Fleet -->
+        <section class="tiles">
+            @foreach (var item in Model.SelectMany(x => x.CarsNotInOffers))
+            {
 
-    <p class="text-center">
+                <article class="style1">
+                    <span class="image">
+                        <img src="@Url.Content("~/images/" + item.PhotoUrl)" alt="Image" height="200" width="400" style="object-fit:cover" />
+                    </span>
+                    <a class="scrolly" asp-route-id="@item.Id" asp-controller="Cars" asp-action="CarDetails">
+                        <h2>@Html.DisplayFor(modelItem => item.Name)</h2>
+                        <h3>@Html.DisplayFor(modelItem => item.Model)</h3>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                        {
+
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.2 * item.DailyRent)) </strong> per day</p>
+                        }
+                        else if (User.IsInRole("RegularCustomer"))
+                        {
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.1 * item.DailyRent)) </strong> per day</p>
+
+                        }
+                        else
+                        {
+                            <p>Rent: <strong> Rs  @(item.DailyRent) </strong> per day</p>
+
+                        }
+
+
+                    </a>
+                </article>
+            }
+
+        </section>
+
+        <p class="text-center">
             <a asp-area="" asp-controller="Cars" asp-action="RentalCars">
             View All &nbsp;<i class="fa fa-long-arrow-right"></i>
         </a>

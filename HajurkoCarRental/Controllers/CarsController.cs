@@ -33,9 +33,10 @@ namespace HajurkoCarRental.Controllers
         }
         public async Task<IActionResult> RentalCars()
         {
-            return _context.Car != null ?
-                        View(await _context.Car.ToListAsync()) :
-                        Problem("Entity set 'HajurkoCarRentalContext.Car'  is null.");
+            var carIdsInOffers = await _context.CarOffer.Select(co => co.CarID).ToListAsync();
+            var cars = await _context.Car.Where(c => !carIdsInOffers.Contains(c.Id)).ToListAsync();
+
+            return View(cars);
         }
 
 
@@ -50,6 +51,9 @@ namespace HajurkoCarRental.Controllers
 
             var car = await _context.Car
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var offerList = _context.Offers.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Title }).ToList();
+            ViewData["OffersList"] = offerList;
+
             if (car == null)
             {
                 return NotFound();

@@ -59,9 +59,27 @@
             <img id="PreviewPhoto" src="~/images/@Model.PhotoUrl" alt="Logo Image"
                               width="125" height="125" />
         </dd>
+        <form asp-controller="Offers" asp-action="AddOffer">
+            <input type="hidden" name="carId" value="@Model.Id"/>
+            @Html.DropDownList("SelectedOffer", (List<SelectListItem>)ViewData["OffersList"], "-- Select Offer --")
+            <input type="hidden" name="selectedOfferId" id="selectedOfferId" value="" />
+            <button type="submit" name="action" value="AddToOffer" class="btn btn-primary">Add to Offer</button>
+
+        </form>
     </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+        <script type="text/javascript">
+        // Get the selected offer Id and set it as the value of the hidden input field
+        $("#SelectedOffer").change(function() {
+            $("#selectedOfferId").val($(this).val());
+        });
+    </script>
+}

@@ -45,6 +45,25 @@ namespace HajurkoCarRental.Controllers
             return View(offers);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddOffer(Guid carId, Guid selectedOfferId)
+        {
+            // Create a new CarOffer object
+            CarOffer carOffer = new CarOffer
+            { id = Guid.NewGuid(),
+                CarID = carId,
+                Offer = selectedOfferId
+            };
+
+            // Add the new record to the CarOffer table
+            _context.CarOffer.Add(carOffer);
+            await _context.SaveChangesAsync();
+
+            // Redirect to the Car Details page with the updated Car object
+            return RedirectToAction("Index", "Cars");
+        }
+
+
         // GET: Offers/Create
         public IActionResult Create()
         {
