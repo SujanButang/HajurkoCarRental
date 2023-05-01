@@ -64,19 +64,39 @@ namespace HajurkoCarRental.Controllers
 
         public async Task<IActionResult> CarDetails(Guid? id)
         {
-            if (id == null || _context.Car == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var car = await _context.Car
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (car == null)
             {
                 return NotFound();
             }
 
+            var carOffer = await _context.CarOffer
+                .Include(co => co.Offers)
+                .FirstOrDefaultAsync(co => co.CarID == id);
+
+            if (carOffer != null)
+            {
+                car.Offers = new List<OffersViewModel>
+        {
+            new OffersViewModel
+            {
+                Id = carOffer.Offers.Id,
+                Title = carOffer.Offers.Title,
+                Description = carOffer.Offers.Description,
+                DiscountPercentage = carOffer.Offers.DiscountPercentage
+            }
+        };
+            }
+
             return View(car);
+
         }
 
         // GET: Cars/Create

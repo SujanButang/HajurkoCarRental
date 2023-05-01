@@ -1,4 +1,5 @@
 ﻿@using HajurkoCarRental.Areas.Identity.Data;
+@using HajurkoCarRental.Controllers;
 @using Microsoft.AspNetCore.Identity;
 @model HajurkoCarRental.Models.Order
 @inject UserManager<HajurkoCarRentalUser> UserManager
@@ -9,17 +10,38 @@
     TimeSpan rentalDuration = Model.ReturnDate - Model.OrderDate;
     int rentalDays = (int)rentalDuration.TotalDays;
     int rentalCharges;
-    if (User.IsInRole("staff") || User.IsInRole("admin"))
+    var UserRole = ViewData["UserRole"];
+    if (ViewData["OfferModel"] != null)
+    {
+        var offerModel = (OffersViewModel)ViewData["OfferModel"];
+         if ((string)UserRole=="Staff" || (string)UserRole=="Admin")
+    {
+            rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * (decimal)(offerModel.DiscountPercentage / 100M)) - (Model.Car.DailyRent * 0.2M)));
+        }
+    else if (UserRole=="RegularCustomer")
+    {
+            rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * (decimal)(offerModel.DiscountPercentage / 100M)) -(Model.Car.DailyRent * 0.1M)));
+    }
+    else
+    {
+            rentalCharges = (int)((rentalDays * Model.Car.DailyRent) - (Model.Car.DailyRent * (decimal)(offerModel.DiscountPercentage / 100M)));
+        }
+    }
+    else
+    {
+        
+    if (UserRole=="Staff" || UserRole=="Admin")
     {
         rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * 0.2)));
     }
-    else if (User.IsInRole("RegularCustomer"))
+    else if (UserRole=="RegularCustomer")
     {
         rentalCharges = (int)(rentalDays * (Model.Car.DailyRent - (Model.Car.DailyRent * 0.1)));
     }
     else
     {
          rentalCharges = rentalDays * Model.Car.DailyRent;
+    }
     }
 }
 <style>
@@ -107,6 +129,7 @@
 
             </div>
             <br/>
+
             <div class="row">
                 <img src="~/images/@Model.Users.DocumentUrl" style="height:200px; width:400px; object-fit:cover" alt="...">
 

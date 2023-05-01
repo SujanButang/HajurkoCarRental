@@ -2,8 +2,14 @@
 
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 *@
 @{
+
+    var rentalHistory = (List<HajurkoCarRental.Models.Sales>)ViewData["RentalHistory"];
+    Console.WriteLine(rentalHistory);
+}
+
 }
 <h1>Manage Users</h1>
 
@@ -38,7 +44,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td class="user-name">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
@@ -68,3 +74,6 @@
         }
     </tbody>
 </table>
+
+
+

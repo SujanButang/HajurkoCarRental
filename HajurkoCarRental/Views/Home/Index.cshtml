@@ -86,7 +86,7 @@
     <h2 class="h2">Rental Cars</h2>
     <!-- Fleet -->
     <section class="tiles">
-            @foreach (var item in Model.SelectMany(x => x.CarsInOffers))
+            @foreach (var item in Model.SelectMany(x => x.CarsNotInOffers))
             {
                 
             <article class="style1">
@@ -121,7 +121,7 @@
         <h2 class="h2">Offers</h2>
         <!-- Fleet -->
         <section class="tiles">
-            @foreach (var item in Model.SelectMany(x => x.CarsNotInOffers))
+            @foreach (var item in Model.SelectMany(x => x.CarsInOffers))
             {
 
                 <article class="style1">
@@ -134,16 +134,17 @@
                         @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                         {
 
-                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.2 * item.DailyRent)) </strong> per day</p>
+
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> <s>@(item.DailyRent - (int)((((decimal)item.Offers[0].DiscountPercentage / 100) * item.DailyRent)))</s> @(item.DailyRent - (int)((((decimal)item.Offers[0].DiscountPercentage / 100) * item.DailyRent))-(0.2*item.DailyRent) ) </strong> per day</p>
                         }
                         else if (User.IsInRole("RegularCustomer"))
                         {
-                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> @(item.DailyRent - (0.1 * item.DailyRent)) </strong> per day</p>
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s> <s>@(item.DailyRent - (int)((((decimal)item.Offers[0].DiscountPercentage / 100) * item.DailyRent)))</s> @(item.DailyRent - (0.1 * item.DailyRent)) </strong> per day</p>
 
                         }
                         else
                         {
-                            <p>Rent: <strong> Rs  @(item.DailyRent) </strong> per day</p>
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@item.DailyRent</s>@(item.DailyRent - (int)((((decimal)item.Offers[0].DiscountPercentage / 100) * item.DailyRent))) </strong> per day</p>
 
                         }
 

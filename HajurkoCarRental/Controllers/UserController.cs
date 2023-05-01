@@ -60,6 +60,8 @@ namespace HajurkoCarRental.Controllers
                                       Address = p.Address,
                                       RoleName = p.RoleName
                                   });
+                var rentalHistory = await _context.Sales.Include(s => s.Order).ThenInclude(o=>o.Users).ToListAsync();
+                ViewData["RentalHistory"] = rentalHistory;
             return View(usersWithRoles);
             }
             else
@@ -77,6 +79,8 @@ namespace HajurkoCarRental.Controllers
                                           Address = user.Address,
                                           RoleName = role.Name
                                       }).ToList();
+                var rentalHistory = await _context.Sales.Include(s => s.Order).ThenInclude(o => o.Users).ToListAsync();
+                ViewData["RentalHistory"] = rentalHistory;
 
                 return View(usersWithRoles);
 

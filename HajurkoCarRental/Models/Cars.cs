@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using HajurkoCarRental.Controllers;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HajurkoCarRental.Models
 {
@@ -23,7 +24,7 @@ namespace HajurkoCarRental.Models
 
         [NotMapped]
         public IFormFile Photo { get; set; }
-
-    
+        public List<CarOffer> CarsInOffers { get; internal set; }
+        internal List<OffersViewModel> Offers { get; set; }
     }
 }

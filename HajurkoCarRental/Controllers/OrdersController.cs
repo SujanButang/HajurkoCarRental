@@ -43,15 +43,40 @@ namespace HajurkoCarRental.Controllers
             {
                 return NotFound();
             }
-
             var order = await _context.Order
                 .Include(o => o.Car)
-                .Include(o=>o.Users)
+                .Include(o => o.Users)        
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var userRole = await _context.UserRoles.FirstOrDefaultAsync(m => m.UserId == order.Users.Id);
+            var roleName = await _context.Roles.FirstOrDefaultAsync(m => m.Id == userRole.RoleId);
+
             if (order == null)
             {
                 return NotFound();
             }
+
+            var car = order.Car;
+
+            if (car != null)
+            {
+                var offer = await _context.CarOffer
+                .Include(co => co.Offers)
+                .FirstOrDefaultAsync(co => co.CarID == order.CarId);
+
+                if (offer != null)
+                {
+                    var offerModel = new OffersViewModel
+                    {
+                        Id = offer.Offers.Id,
+                        Title = offer.Offers.Title,
+                        DiscountPercentage = offer.Offers.DiscountPercentage,
+                        Validity = offer.Offers.Validity
+                    };
+
+                    ViewData["OfferModel"] = offerModel;
+                }
+            }
+            ViewData["UserRole"] = roleName.Name;
 
             return View(order);
         }
@@ -115,7 +140,7 @@ namespace HajurkoCarRental.Controllers
     {
         Id = Guid.NewGuid(),
         To = order.CustomerId,
-        NotificationType = "Your Rental Request for "+ order.Car.Name + order.Car.Model +"has been approved by the system."
+        NotificationType = "Your Rental Request has been approved by the system."
     };
 
     // Add the notification to the context and save changes

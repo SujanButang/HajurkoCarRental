@@ -20,29 +20,50 @@ namespace HajurkoCarRental.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var carIdsInOffers = await _context.CarOffer.Select(co => co.CarID).ToListAsync();
-            var cars = await _context.Car.Where(c => !carIdsInOffers.Contains(c.Id)).ToListAsync();
-            var carsNotInOffer = await _context.Car.Where(c => carIdsInOffers.Contains(c.Id)).ToListAsync();
+            var carsInOffer = await (
+    from co in _context.CarOffer
+    join c in _context.Car on co.CarID equals c.Id
+    join o in _context.Offers on co.Offer equals o.Id // join with Offers
+    select new Car
+    {
+        Id = c.Id,
+        Name = c.Name,
+        Model = c.Model,
+        Year = c.Year,
+        DailyRent = c.DailyRent,
+        Status = c.Status,
+        PhotoUrl= c.PhotoUrl,
+        Offers = new List<OffersViewModel> // populate the Offers list
+        {
+            new OffersViewModel
+            {
+                Id = o.Id,
+                Title = o.Title,
+                Description = o.Description,
+                DiscountPercentage = o.DiscountPercentage,
+                Validity = o.Validity
+            }
+        }
+    }
+).ToListAsync();
+
+
+            var carIdsInOffer = carsInOffer.Select(co => co.Id);
+            var carsNotInOffer = await _context.Car.Where(c => !carIdsInOffer.Contains(c.Id)).ToListAsync();
 
             var allCars = new CarViewModel
             {
-                CarsInOffers = cars,
+                CarsInOffers = carsInOffer,
                 CarsNotInOffers = carsNotInOffer
             };
 
-            var carViewModels = new List<CarViewModel>();
-            carViewModels.Add(allCars);
+            var carViewModels = new List<CarViewModel> { allCars };
 
             return View(carViewModels);
         }
+    
 
-        public async Task<IActionResult> Offers()
-        {
-            var carIdsInOffers = await _context.CarOffer.Select(co => co.CarID).ToListAsync();
-            var cars = await _context.Car.Where(c => carIdsInOffers.Contains(c.Id)).ToListAsync();
-
-            return View(cars);
-        }
+    
 
         public IActionResult Privacy()
         {

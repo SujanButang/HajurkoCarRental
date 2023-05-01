@@ -41,11 +41,44 @@
         @Html.DisplayFor(model=>model.RegistrationNo)
     </dd>
     </div>
+    @if (Model.Offers != null)
+    {
+        
+    <div class="detail">
+        <dt class="col-sm-2">
+            Offer @Html.DisplayNameFor(model=>model.Offers[0].Title)
+        </dt>
+        <dd class="col-sm-11">
+            @Html.DisplayFor(model=>model.Offers[0].Title)
+        </dd>
+    </div>
+    }
 
     <div class="detail">
 
     <dt class="col-sm-1">@Html.DisplayNameFor(model=>model.DailyRent)</dt>
     <dd class="col-sm-11">
+        @if (Model.Offers != null && Model.Offers.Any())
+            {
+                @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                {
+
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@Model.DailyRent</s> <s>@(Model.DailyRent - (int)((((decimal)Model.Offers[0].DiscountPercentage / 100) * Model.DailyRent)))</s> @(Model.DailyRent - (int)((((decimal)Model.Offers[0].DiscountPercentage / 100) * Model.DailyRent)) - (0.2 * Model.DailyRent)) </strong> per day</p>
+                }
+                else if (User.IsInRole("RegularCustomer"))
+                {
+                            <p>Rent: <strong> Rs <s style="font-weight:500">@Model.DailyRent</s> <s>@(Model.DailyRent - (int)((((decimal)Model.Offers[0].DiscountPercentage / 100) * Model.DailyRent)))</s> @(Model.DailyRent - (0.1 * Model.DailyRent)) </strong> per day</p>
+
+                }
+                else
+                {
+                    <p>Rent: <strong> Rs <s style="font-weight:500">@Model.DailyRent</s>@(Model.DailyRent - (int)((((decimal)Model.Offers[0].DiscountPercentage / 100) * Model.DailyRent))) </strong> per day</p>
+
+                }
+            }
+            else
+            {
+                
             @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
             {
 
@@ -53,7 +86,7 @@
             }
             else if (User.IsInRole("RegularCustomer"))
             {
-                                <p>  Rs <strong><s style="font-weight:500">@Model.DailyRent</s> @(Model.DailyRent - (0.1 * Model.DailyRent)) </strong> per day</p>
+                 <p>  Rs <strong><s style="font-weight:500">@Model.DailyRent</s> @(Model.DailyRent - (0.1 * Model.DailyRent)) </strong> per day</p>
 
             }
             else
@@ -61,9 +94,11 @@
                 <p>Rs  <strong>  @(Model.DailyRent) </strong> per day</p>
 
             }
+            }
         </dd>
     </div>
     
 </dl>
 
 <a class="btn btn-primary" asp-controller="Orders" asp-action="Create" asp-route-carId = "@Model.Id">Book Now</a>
+

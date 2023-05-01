@@ -5,6 +5,9 @@
 }
 
 <h1>Sales</h1>
+<input type="text" id="search-input" placeholder="Search by Customer Name" />
+<input type="text" id="approveby-search" placeholder="Search by Approved By"/>
+<input type="date" id="order-date" placeholder="Search by Date"/>
 
 
 <table class="table">
@@ -13,6 +16,9 @@
             
             <th>
                 @Html.DisplayNameFor(model => model.Order) Id
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.Order.OrderDate)
             </th>
             <th>
                 Car @Html.DisplayNameFor(model => model.Car.Name)
@@ -34,15 +40,18 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="table-row">
             
             <td>
                 @Html.DisplayFor(modelItem => item.Order.Id)
             </td>
+            <td class="order-date">
+                @Html.DisplayFor(modelItem=>item.Order.OrderDate)
+            </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Car.Name) @Html.DisplayFor(mdoelItem => item.Car.Model)
+                    @Html.DisplayFor(modelItem => item.Car.Name) @Html.DisplayFor(modelItem => item.Car.Model)
                 </td>
-                <td>
+                <td class="customer">
                     @Html.DisplayFor(modeItem => item.Order.Users.Name)
                 </td>
             <td>
@@ -51,7 +60,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.RentalCharges)
             </td>
-            <td>
+            <td class="approved-by">
                 @Html.DisplayFor(modelItem => item.HajurkoCarRentalUser.Name)
             </td>
             <td>
@@ -63,3 +72,36 @@
 }
     </tbody>
 </table>
+@section Scripts {
+
+    <script type='text/javascript'>
+        const searchInput = document.getElementById('search-input');
+        const approveByInput = document.getElementById('approveby-search');
+        const dateInput = document.getElementById('order-date');
+        const carItems = document.querySelectorAll('.table-row');
+
+        function filter() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const approveByTerm = approveByInput.value.toLowerCase();
+            const dateTerm = dateInput.value;
+            carItems.forEach(item => {
+                const customerName = item.querySelector('.customer').textContent.toLowerCase();
+                const approvedByName = item.querySelector('.approved-by').textContent.toLowerCase();
+                const orderDate = new Date(item.querySelector('.order-date').textContent);
+                const orderDateString = orderDate.getFullYear() + '-' + (orderDate.getMonth() + 1).toString().padStart(2, '0') + '-' + orderDate.getDate().toString().padStart(2, '0');
+                if (customerName.includes(searchTerm) && approvedByName.includes(approveByTerm) && (dateTerm === '' || orderDateString === dateTerm)) {
+                    item.style.display = 'table-row';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filter);
+        approveByInput.addEventListener('input', filter);
+        dateInput.addEventListener('input', filter);
+    </script>
+
+
+    
+    }
