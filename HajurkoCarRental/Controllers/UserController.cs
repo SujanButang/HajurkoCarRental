@@ -196,5 +196,53 @@ namespace HajurkoCarRental.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Users));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> FilterUser(string status)
+        {
+            var last3Months = DateTime.UtcNow.AddMonths(-3);
+            if (status == "Active")
+            {
+                var activeUsers = await _context.Users
+                    .Join(_context.Order,
+                        u => u.Id,
+                        o => o.CustomerId,
+                        (u, o) => new { User = u, Order = o })
+                    .Where(x => x.Order.ReturnDate >= last3Months)
+                    .Select(x => x.User)
+                    .Distinct()
+                    .ToListAsync();
+
+                var viewModelList = new List<UserRolesViewModel>();
+                foreach (var user in activeUsers)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var viewModel = new UserRolesViewModel { Id = user.Id, Name = user.Name, Email = user.Email, Phone = user.Phone, RoleId = "", RoleName = "" };
+                    viewModelList.Add(viewModel);
+                }
+
+                return View("Users", viewModelList);
+            }
+            else if (status == "Inactive")
+            {
+                var inactiveUsers = await _context.Users
+                    .Where(u => !_context.Order.Any(o => o.CustomerId == u.Id && o.ReturnDate >= last3Months))
+                    .ToListAsync();
+
+                var viewModelList = new List<UserRolesViewModel>();
+                foreach (var user in inactiveUsers)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var viewModel = new UserRolesViewModel { Id = user.Id, Name = user.Name, Email = user.Email, Phone = user.Phone, RoleId = "", RoleName = "" };
+                    viewModelList.Add(viewModel);
+                }
+
+                return View("Users", viewModelList);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

@@ -1,14 +1,45 @@
 ﻿@model IEnumerable<HajurkoCarRental.Models.Car>
-
+<style>
+    input[type="checkbox"] {
+        display: inline-block;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        border: none;
+        clip: auto;
+        overflow: visible;
+        white-space: nowrap;
+    }
+</style>
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
+<h1>Manage Cars</h1>
+
+<p style="display:flex; gap: 50px;">
     <a asp-action="Create">Create New</a>
+    <a asp-controller="Cars" asp-action="CarHistory">View History</a>
+
 </p>
+
+<form id="filter-form">
+    <div>
+        <label>
+            <input type="checkbox" name="status" value="Available">
+            Available
+        </label>
+    </div>
+    <div>
+        <label>
+            <input type="checkbox" name="status" value="Rented">
+            Rented
+        </label>
+    </div>
+    <button type="submit">Filter</button>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -41,7 +72,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="table-row">
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -60,7 +91,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DailyRent)
             </td>
-            <td>
+            <td class="car-status">
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
@@ -77,3 +108,40 @@
 }
     </tbody>
 </table>
+
+@section scripts {
+        <script type="text/javascript">
+            const form = document.getElementById('filter-form');
+            const rows = document.querySelectorAll('.table-row');
+
+
+            // Add event listeners to each checkbox
+            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', (event) => {
+                    // Uncheck all other checkboxes
+                    checkboxes.forEach(cb => {
+                        if (cb !== checkbox) {
+                            cb.checked = false;
+                        }
+                    });
+                });
+            });
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const statuses = Array.from(form.querySelectorAll('input[name="status"]:checked')).map(input => input.value);
+                console.log(statuses[0])
+                rows.forEach(row => {
+                    const status = row.querySelector('.car-status').textContent.replace(/\s/g, '');
+                    console.log(status)
+                    if(status==statuses[0]){
+                        row.style.display = 'table-row'
+                    }
+                    else{
+                        row.style.display='none'
+                    }
+                });
+            });
+        </script>
+}

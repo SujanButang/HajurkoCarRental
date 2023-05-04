@@ -69,7 +69,20 @@ namespace HajurkoCarRental.Controllers
             
         }
 
-      
+        public async Task<IActionResult> CancelBooking(Guid? id)
+        {
+            var sale = await _context.Sales.FirstAsync(s => s.OrderId == id);
+            var order = await _context.Order.FirstAsync(o => o.Id == id);
+            _context.Sales.Remove(sale);
+            _context.Order.Remove(order);
+            await _context.SaveChangesAsync();
+            TempData["Message"] = "Booking Cancelled successfully!";
+            TempData.Keep();
+            return RedirectToAction("Index", "Home");
+
+        }
+
+
 
         public async Task<IActionResult> RentalHistory(string userId)
         {

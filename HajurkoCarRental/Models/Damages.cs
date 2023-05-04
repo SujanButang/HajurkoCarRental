@@ -18,10 +18,13 @@ namespace HajurkoCarRental.Models
         public int RepairCost { get; set; }
 
         public string Status { get; set; }
+
+        public string PaymentStatus { get; set; }
         public Damages()
         {
             RepairCost= 0;
             Status = "Pending";
+            PaymentStatus = "Pending";
         }
 
         

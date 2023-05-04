@@ -10,17 +10,21 @@ using HajurkoCarRental.Models;
 using HajurkoCarRental.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using HajurkoCarRental.Areas.Identity.Data;
 
 namespace HajurkoCarRental.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly HajurkoCarRentalContext _context;
+        private readonly UserManager<HajurkoCarRentalUser> _userManager;
 
 
-        public OrdersController(HajurkoCarRentalContext context)
+
+        public OrdersController(HajurkoCarRentalContext context, UserManager<HajurkoCarRentalUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
 
@@ -98,14 +102,23 @@ namespace HajurkoCarRental.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Order order)
         {
-            
-                order.Id = Guid.NewGuid();
-                _context.Add(order);
-                await _context.SaveChangesAsync();
+
+            var damages = await _context.Damages.Where(d => d.UserId == _userManager.GetUserId(User) && d.PaymentStatus == "Pending").ToListAsync();
+            if (damages.Any())
+            {
+                TempData["ErrorMessage"] = "You have pending damage Payment. Please resolve them before making an order.";
+                TempData.Keep();
+                return RedirectToAction("Index", "Home");
+            }
+
+            order.Id = Guid.NewGuid();
+            _context.Add(order);
+            await _context.SaveChangesAsync();
 
             TempData["Message"] = "Order added successfully!";
-            return RedirectToAction("Index","Home");           
-  
+            TempData.Keep();
+            return RedirectToAction("Index", "Home");
+
         }
 
         // GET: Orders/Edit/5

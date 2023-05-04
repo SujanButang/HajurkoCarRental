@@ -55,7 +55,9 @@
                 </td>
                 
                 <td>
-                    <a asp-controller="Damages" asp-action="Create" asp-route-id="@item.Car.Id">Report Damage</a> 
+                    <a asp-controller="Damages" asp-action="Create" asp-route-id="@item.Car.Id">Report Damage</a>
+                    <a asp-controller="Sales" asp-action="CancelBooking" asp-route-id="@item.OrderId">Cancel Order</a>
+
                    
                 </td>
             </tr>

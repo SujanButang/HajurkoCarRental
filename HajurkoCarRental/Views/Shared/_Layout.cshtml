@@ -72,6 +72,9 @@
                 <li>
                     <a  asp-area="" asp-controller="Cars" asp-action="RentalCars">Rental Cars</a>
                 </li>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    
 
                 <li>
                     <a asp-area="" asp-controller="Notifications" asp-action="Index">Notifications</a>
@@ -80,6 +83,7 @@
                 <li>
                     <a asp-area="" asp-controller="Sales" asp-action="RentalHistory" asp-route-userId="@UserManager.GetUserId(User)">Rental History</a>
                 </li>
+                }
                 @if(SignInManager.IsSignedIn(User) && (User.IsInRole("Admin")||User.IsInRole("Staff"))  )
                 {
                                     <li>

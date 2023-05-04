@@ -155,32 +155,12 @@ namespace HajurkoCarRental.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Model,Color,Year,RegistrationNo,DailyRent,Status,PhotoUrl")] Car car)
         {
-            if (id != car.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
+           
                     _context.Update(car);
                     await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CarExists(car.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+               
                 return RedirectToAction(nameof(Index));
-            }
-            return View(car);
+       
         }
 
         // GET: Cars/Delete/5
@@ -223,6 +203,24 @@ namespace HajurkoCarRental.Controllers
         private bool CarExists(Guid id)
         {
           return (_context.Car?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> CarHistory()
+        {
+            var carCount = await _context.Order
+        .Include(o => o.Car)
+        .GroupBy(o => new { o.CarId, o.Car.Name, o.Car.Model, o.Car.PhotoUrl })
+        .Select(g => new CarHistoryModel
+        {
+            CarId = g.Key.CarId,
+            CarMake = g.Key.Name,
+            CarModel = g.Key.Model,
+            CarPhoto = g.Key.PhotoUrl,
+            NumOrders = g.Count()
+        })
+        .ToListAsync();
+
+            return View(carCount);
         }
 
         private string GetProfilePhotoFileName(Car car)

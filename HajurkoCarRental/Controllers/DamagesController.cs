@@ -68,7 +68,7 @@ namespace HajurkoCarRental.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CarId,DamageDesc,RepairCost,Status,UserId")] Damages damages)
+        public async Task<IActionResult> Create([Bind("Id,CarId,DamageDesc,RepairCost,Status,UserId,PaymentStatus")] Damages damages)
         {
             
                 damages.Id = Guid.NewGuid();
@@ -77,6 +77,14 @@ namespace HajurkoCarRental.Controllers
             TempData["Message"] = "Your Report has been submitted.";
                 return RedirectToAction("Index","Home");
        
+        }
+
+        public async Task<IActionResult> MarkPaid(Guid? Id)
+        {
+            var damage = await _context.Damages.FirstOrDefaultAsync(d=> d.Id == Id);
+            damage.PaymentStatus = "Paid";
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Damages/Edit/5

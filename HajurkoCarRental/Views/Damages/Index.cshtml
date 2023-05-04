@@ -30,7 +30,7 @@
             <th>
                 @Html.DisplayNameFor(model=>model.Status)
             </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model=>model.PaymentStatus)</th>
     </thead>
     <tbody>
 @foreach (var item in Model) {
@@ -53,13 +53,20 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem=>item.PaymentStatus)
+                </td>
             <td>
                     @if (item.Status == "Pending")
                     {
                         
                 <a asp-action="Edit" asp-route-id="@item.Id">Charge Amount</a> 
                     }
-            </td>
+                    @if (item.PaymentStatus == "Pending")
+                    {
+                        <a asp-action="MarkPaid" asp-route-id="@item.Id">Mark as Paid</a>
+                    }
+                </td>
         </tr>
 }
     </tbody>

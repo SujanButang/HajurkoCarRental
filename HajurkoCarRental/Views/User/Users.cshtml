@@ -10,12 +10,28 @@
     Console.WriteLine(rentalHistory);
 }
 
-}
+
 <h1>Manage Users</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a id="register" asp-area="Identity" asp-page="/Account/Register">Add User</a>
 </p>
+
+<form id="status-form" asp-action="FilterUser" asp-controller="User" method="get">
+    <div>
+        <label>
+            <input type="radio" name="status" value="Active" required>
+            Active
+        </label>
+    </div>
+    <div>
+        <label>
+            <input type="radio" name="status" value="Inactive" required>
+            Inactive
+        </label>
+    </div>
+    <button type="submit">Filter</button>
+</form>
 <table class="table">
     <thead>
         <tr>
