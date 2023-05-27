@@ -24,7 +24,7 @@ namespace HajurkoCarRental.Controllers
         }
 
         // GET: Cars
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin, Staff")]
         public async Task<IActionResult> Index()
         {
               return _context.Car != null ? 
